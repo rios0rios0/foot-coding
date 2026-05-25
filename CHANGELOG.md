@@ -16,14 +16,11 @@ Exceptions are acceptable depending on the circumstances (critical bug fixes tha
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-05-25
+
 ### Added
 
 - added `CLAUDE.md` with architecture, build, and convention guidance for Claude Code sessions
-
-### Changed
-
-### Removed
-
 
 ## [1.0.0] - 2019-01-02
 
