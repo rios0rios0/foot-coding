@@ -102,7 +102,7 @@ The resource files (`ConIcon/ConIcon.res` and `XPManifest/XPManifest.res`) are r
 
 ## CI/CD Pipeline
 
-There is **no automated build or deployment pipeline**. The project is discontinued and compiled manually in the Delphi IDE on Windows. The only workflows are `.github/workflows/claude-review.yaml` and `.github/workflows/claude-mention.yaml`, which call the shared Claude reusable workflows in `rios0rios0/pipelines` and need the `CLAUDE_CODE_OAUTH_TOKEN` secret.
+There is **no automated build or deployment pipeline**. The project is discontinued and compiled manually in the Delphi IDE on Windows. Three workflows call shared reusable workflows in `rios0rios0/pipelines`: `.github/workflows/claude-review.yaml` and `.github/workflows/claude-mention.yaml` (the Claude review and `@claude` responder, needing the `CLAUDE_CODE_OAUTH_TOKEN` secret) and `.github/workflows/checks.yaml`, which runs the shared `code-check > quality:basic-checks` gate on pull requests — rebase status and the changelog rule (`chlog check`). There is no compile step.
 
 ## Tests and Linting
 
