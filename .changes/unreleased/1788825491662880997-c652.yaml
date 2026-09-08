@@ -1,3 +1,0 @@
-kind: 'Changed'
-body: 'refreshed `.github/copilot-instructions.md` to document the `checks.yaml` workflow and its shared `quality:basic-checks` gate'
-time: '2026-09-07T23:58:11.662809747Z'
