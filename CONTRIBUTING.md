@@ -15,7 +15,8 @@ This project was built using the following tools and technologies:
 
 ### Build Steps (Historical)
 
-1. Open `FC.dpr` in Borland Delphi 7 (or compatible Object Pascal compiler)
-2. Compile and run (`F9`)
+1. Run `brcc32 XPManifest.rc` inside `XPManifest/` to build `XPManifest.res`, which `FC.dpr` links but does not compile
+2. Open `FC.dpr` in Borland Delphi 7 (or compatible Object Pascal compiler)
+3. Compile and run (`F9`)
 
 > **Note:** Targets Windows XP and later (32-bit). Icon resources in `ConIcon/`, XP manifest in `XPManifest/`. `Clear.bat` cleans Delphi build artifacts.

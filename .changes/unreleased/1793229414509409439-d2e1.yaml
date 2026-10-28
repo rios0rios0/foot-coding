@@ -1,0 +1,3 @@
+kind: 'Changed'
+body: 'refreshed `AGENTS.md`, `.github/copilot-instructions.md`, `README.md`, and `CONTRIBUTING.md` to document building `XPManifest.res` with `brcc32` before compiling, the second `Clear.bat` in `External Uses/`, the existing CI workflows, and the Windows-1252 source encoding, and pointed the `code-review` skill at `AGENTS.md` and dropped its template checks for layers, mocks, and tests that this repository does not have'
+time: '2026-10-28T23:16:54.509335097Z'
