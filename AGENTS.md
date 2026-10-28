@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI coding agents (Claude Code, Codex, Cursor, GitHub Copilot) when working with code in this repository.
 
 ## Overview
 
@@ -14,17 +14,17 @@ Single-file Win32 API application — no VCL framework. `FC.dpr` contains all wi
 
 ## Build
 
-No automated build system, CI, or tests. Open `FC.dpr` in Borland Delphi 7, press F9. Run `Clear.bat` to remove build artifacts before committing.
+No tests, and CI has no compile step (the workflows run only the Claude review bots and the `chlog check` pull-request gate). On a clean checkout, run `brcc32 XPManifest.rc` inside `XPManifest/` first, then open `FC.dpr` in Borland Delphi 7 and press F9. Before committing, run `Clear.bat` in the root and its copy in `External Uses/`; `.gitignore` covers no Delphi artifacts.
 
 ## Conventions
 
 - **Discontinued** — do not suggest feature additions, library upgrades, or framework migration (VCL/FMX).
 - **No VCL** — do not introduce VCL or third-party component packages.
-- **No external dependencies** — `MyUtils.pas` uses only `Windows.pas` types and the Pascal standard library.
+- **No external dependencies** — `MyUtils.pas` has no `uses` clause; keep it that way.
 - **Portuguese UI** — button labels and UI strings are in Brazilian Portuguese. Do not translate.
+- **ANSI source encoding** — `FC.dpr` and `MyUtils.pas` are Windows-1252, not UTF-8; their accented Portuguese literals (`Binário`, `Século`, `Sábado`) are corrupted if a file is re-saved as UTF-8. Keep the encoding when editing.
 - **Single-unit logic** — all conversion algorithms stay in `MyUtils.pas`.
-- **PascalCase** — `h` prefix for Win32 handles (`hFrm`, `hLst`, `hFont`).
-- **Binary resources** — `*.ico` and `*.res` files cannot be edited as text. `{$R}` directives in `FC.dpr` reference `.res` files compiled from `.rc` by the IDE.
+- **Resources** — `.res` files are build output and are not committed. `{$R 'ConIcon\ConIcon.res' 'ConIcon\ConIcon.rc'}` names its script, so the IDE compiles it; `{$R XPManifest\XPManifest.res}` names none, so that file comes from `brcc32`. Edit the `.rc` scripts and `.ico` files, never a `.res`.
 
 <!-- chlog:start -->
 ## Changelog (chlog) — MANDATORY

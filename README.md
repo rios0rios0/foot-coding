@@ -71,8 +71,9 @@ The `MyUtils.pas` unit implements the following from scratch (no standard librar
 ## Installation
 
 1. Install **Borland Delphi 7** (or a compatible Object Pascal compiler)
-2. Open `FC.dpr` in the Delphi IDE
-3. Compile and run (F9)
+2. Run `brcc32 XPManifest.rc` inside `XPManifest/` to build `XPManifest.res`, which `FC.dpr` links but does not compile
+3. Open `FC.dpr` in the Delphi IDE
+4. Compile and run (F9)
 
 The application targets **Windows XP and later** (32-bit).
 

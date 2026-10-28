@@ -20,6 +20,7 @@ foot-coding/
 │   ├── 32x32.ico                 # Small icon for taskbar / title bar
 │   └── 64x64.ico                 # Large icon
 ├── External Uses/
+│   ├── Clear.bat                 # Cleans the unit's build artifacts (MyUtils.dcu)
 │   └── MyUtils.pas               # Utility unit: all conversion algorithms
 ├── XPManifest/
 │   ├── XPManifest.Manifest       # Windows XP common controls manifest (XML)
@@ -55,18 +56,19 @@ foot-coding/
 
 There is no automated build system. Compilation requires a Windows machine with Borland Delphi 7 or a compatible IDE.
 
-1. Open `FC.dpr` in **Borland Delphi 7** (or Embarcadero RAD Studio).
-2. Compile and run: **F9** (build and run) or **Ctrl+F9** (compile only).
+1. On a clean checkout, run `brcc32 XPManifest.rc` inside `XPManifest/` to produce `XPManifest.res`.
+2. Open `FC.dpr` in **Borland Delphi 7** (or Embarcadero RAD Studio).
+3. Compile and run: **F9** (build and run) or **Ctrl+F9** (compile only).
 
-The resource files (`ConIcon/ConIcon.res` and `XPManifest/XPManifest.res`) are referenced via `{$R}` directives in `FC.dpr` and are compiled automatically by the Delphi IDE using the Windows Resource Compiler.
+`FC.dpr` links two resource files. `{$R 'ConIcon\ConIcon.res' 'ConIcon\ConIcon.rc'}` names its script, so the IDE compiles `ConIcon.res` on build; `{$R XPManifest\XPManifest.res}` names none, so the IDE only links it and step 1 must have produced it.
 
-> **Note:** Run `Clear.bat` to remove Delphi temporary files before committing.
+> **Note:** Run `Clear.bat` in the root and in `External Uses/` to remove Delphi temporary files before committing; `.gitignore` covers no Delphi artifacts.
 
 ## Architecture and Design Patterns
 
 - **Single-file application** — all Win32 API bootstrapping, message handling, and UI creation live in `FC.dpr`. Conversion logic is isolated in `External Uses/MyUtils.pas`.
 - **Pure Win32 API GUI (no VCL)** — the main window and all controls (`ListBox`, `Edit`, `Button`, `Static`) are created manually with `CreateWindowExA`. There are no `.dfm` form definitions.
-- **Custom `WindowProc`** — a single `stdcall` callback handles all window messages: `WM_COMMAND` (button clicks, listbox selection), `WM_CTLCOLORLISTBOX`, `WM_CTLCOLORSTATIC`, `WM_CTLCOLOREDIT` (dark-theme colouring), and `WM_DESTROY`.
+- **Custom `WindowProc`** — a single `stdcall` callback handles all window messages: `WM_COMMAND` (button clicks; the listbox selection is read with `LB_GETCURSEL` when **Processar** is clicked), `WM_CTLCOLORLISTBOX`, `WM_CTLCOLORSTATIC`, `WM_CTLCOLOREDIT` (dark-theme colouring), and `WM_DESTROY`.
 - **Semi-transparent window** — `SetLayeredWindowAttributes` with `LWA_ALPHA` (alpha = 255, fully opaque but layered) is applied to the main form.
 - **Inline x86 assembly** — `IntToStr` and `StrToInt` in `MyUtils.pas` are implemented in pure `asm` blocks for educational purposes.
 
@@ -114,16 +116,16 @@ Since this project is discontinued, the only expected changes are archival corre
 
 1. Edit `.pas` source files or documentation directly.
 2. Open `FC.dpr` in Borland Delphi 7 / RAD Studio to verify compilation if source changes are made.
-3. Run `Clear.bat` to remove build artifacts before committing.
+3. Run `Clear.bat` in the root and in `External Uses/` to remove build artifacts before committing.
 4. Commit only source files (`*.dpr`, `*.pas`, `*.rc`, `*.ico`, `*.bat`, `*.Manifest`). Do **not** commit compiled artifacts (`*.exe`, `*.dcu`, `*.opt`, `*.res`, etc.).
 
 ## Coding Conventions
 
 - **Object Pascal style** — `PascalCase` for types and routines, `begin`/`end` blocks, `h` prefix for Win32 handles (`hFrm`, `hLst`, `hFont`), `Str`/`Int`/`Hex` function naming from the Delphi standard library style.
 - **Single-unit conversion logic** — all algorithms stay in `MyUtils.pas`; avoid splitting into additional units.
-- **Portuguese UI strings** — button labels, static text, and listbox items are in Brazilian Portuguese (e.g., `'Processar'`, `'Limpar'`, `'Entrada:'`, `'Saída:'`). Preserve this convention.
+- **Portuguese UI strings** — button labels, static text, and listbox items are in Brazilian Portuguese (e.g., `'Processar'`, `'Limpar'`, `'Entrada:'`, `'Saida:'`). Preserve this convention. `FC.dpr` and `MyUtils.pas` are Windows-1252 encoded; re-saving them as UTF-8 corrupts the accented literals (`Binário`, `Século`, `Sábado`).
 - **No VCL dependency** — do not introduce VCL or any third-party component packages.
-- **No external library dependencies** — `MyUtils.pas` uses only `Windows.pas` types and the Pascal standard library; do not add `uses` clauses for external libraries.
+- **No external library dependencies** — `MyUtils.pas` has no `uses` clause; do not add one for external libraries.
 
 ## Common Tasks
 
@@ -131,7 +133,7 @@ Since this project is discontinued, the only expected changes are archival corre
 |-----------------------------------|---------------------------------------------------------------------|
 | Build the project                 | Open `FC.dpr` in Delphi 7, press **F9**                            |
 | Compile without running           | Press **Ctrl+F9** in Delphi 7                                      |
-| Clean build artifacts             | Run `Clear.bat` in the project root                                |
+| Clean build artifacts             | Run `Clear.bat` in the project root and in `External Uses/`        |
 | Add a new conversion operation    | Add a string to `ListboxContent` in `FC.dpr`, add a `case` branch in `WindowProc`, implement the algorithm in `MyUtils.pas` |
 | Change window transparency        | Modify the `Transparence` argument to `CreateMyForm` in `FC.dpr`   |
 
@@ -142,7 +144,7 @@ Since this project is discontinued, the only expected changes are archival corre
 - UI strings are in **Brazilian Portuguese**; do not translate them.
 - The `*.ico` and `*.res` files are binary resources — they cannot be edited as plain text.
 - `IntToStr` and `StrToInt` in `MyUtils.pas` are **intentionally implemented in x86 assembly** for educational purposes; do not replace them with Pascal equivalents.
-- The `{$R}` directives in `FC.dpr` reference pre-compiled `.res` files; the IDE compiles `.rc` → `.res` automatically.
+- `FC.dpr` compiles `ConIcon.rc` itself but only links `XPManifest\XPManifest.res`, which must be built with `brcc32` first; `.res` files are build output and are not committed.
 
 <!-- chlog:start -->
 ## Changelog (chlog) — MANDATORY
